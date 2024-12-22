@@ -71,7 +71,7 @@ int main() {
     SDL_Window* window = SDL_CreateWindow("Hello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
     SDL_Surface* surface = SDL_GetWindowSurface(window);
 
-    struct Circle circle = {90, 90, 90, 4, 5};
+    struct Circle circle = {90, 90, 90, 40, 50};
 
     SDL_Rect erase_rec = {0, 0, WIDTH, HEIGHT};
     SDL_Event event;
