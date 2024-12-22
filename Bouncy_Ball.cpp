@@ -12,7 +12,9 @@ using namespace std;
 #define WIDTH 500
 #define HEIGHT 500
 #define WHITE 0xffffffff
+#define PINK 0xffff00ff
 #define g 0.2
+#define TRAJECTORY_LIMIT 100
 
 struct Circle {
     double x;
@@ -21,6 +23,8 @@ struct Circle {
     double v_x;
     double v_y;
 };
+
+vector<pair<int, int>> trajectory;
 
 void fillCircle(SDL_Surface* surface, struct Circle circle) {
     double l_x = circle.x - circle.r;
@@ -41,6 +45,13 @@ void fillCircle(SDL_Surface* surface, struct Circle circle) {
     }
 }
 
+void renderTrajectory(SDL_Surface* surface) {
+    for (auto& point : trajectory) {
+        SDL_Rect pixel = {point.first, point.second, 1, 1};
+        SDL_FillRect(surface, &pixel, PINK);
+    }
+}
+
 void step(struct Circle* circle) {
     circle->x += circle->v_x;
     circle->y += circle->v_y;
@@ -48,7 +59,7 @@ void step(struct Circle* circle) {
     circle->v_y += g;
 
     if(circle->x + circle->r > WIDTH){
-        circle->x = WIDTH-circle->r;
+        circle->x = WIDTH - circle->r;
         circle->v_x *= -0.9;
     }
     if(circle->x - circle->r < 0){
@@ -57,12 +68,18 @@ void step(struct Circle* circle) {
     }
 
     if(circle->y + circle->r > HEIGHT){
-        circle->y = HEIGHT-circle->r;
+        circle->y = HEIGHT - circle->r;
         circle->v_y *= -0.9;
     }
     if(circle->y - circle->r < 0){
         circle->y = circle->r;
         circle->v_y *= -0.9;
+    }
+
+    trajectory.push_back({static_cast<int>(circle->x), static_cast<int>(circle->y)});
+
+    if (trajectory.size() > TRAJECTORY_LIMIT) {
+        trajectory.erase(trajectory.begin());
     }
 }
 
@@ -71,7 +88,7 @@ int main() {
     SDL_Window* window = SDL_CreateWindow("Hello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
     SDL_Surface* surface = SDL_GetWindowSurface(window);
 
-    struct Circle circle = {90, 90, 90, 40, 50};
+    struct Circle circle = {90, 90, 50, 4, 5};
 
     SDL_Rect erase_rec = {0, 0, WIDTH, HEIGHT};
     SDL_Event event;
@@ -84,6 +101,8 @@ int main() {
         }
 
         SDL_FillRect(surface, &erase_rec, 0x000000);
+
+        renderTrajectory(surface);
 
         fillCircle(surface, circle);
         step(&circle);
