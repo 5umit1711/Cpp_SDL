@@ -60,24 +60,26 @@ void step(struct Circle* circle) {
 
     if(circle->x + circle->r > WIDTH){
         circle->x = WIDTH - circle->r;
-        circle->v_x *= -0.9;
+        circle->v_x *= -0.5;
     }
     if(circle->x - circle->r < 0){
         circle->x = circle->r;
-        circle->v_x *= -0.9;
+        circle->v_x *= -0.5;
     }
 
     if(circle->y + circle->r > HEIGHT){
         circle->y = HEIGHT - circle->r;
-        circle->v_y *= -0.9;
+        circle->v_y *= -0.5;
     }
     if(circle->y - circle->r < 0){
         circle->y = circle->r;
-        circle->v_y *= -0.9;
+        circle->v_y *= -0.5;
     }
 
-    trajectory.push_back({static_cast<int>(circle->x), static_cast<int>(circle->y)});
+    if (abs(circle->v_x) < 0.1) circle->v_x = 0;
+    if (abs(circle->v_y) < 0.1) circle->v_y = 0;
 
+    trajectory.push_back({static_cast<int>(circle->x), static_cast<int>(circle->y)});
     if (trajectory.size() > TRAJECTORY_LIMIT) {
         trajectory.erase(trajectory.begin());
     }
@@ -88,7 +90,7 @@ int main() {
     SDL_Window* window = SDL_CreateWindow("Hello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
     SDL_Surface* surface = SDL_GetWindowSurface(window);
 
-    struct Circle circle = {90, 90, 50, 4, 5};
+    struct Circle circle = {90, 90, 80, 4, 5};
 
     SDL_Rect erase_rec = {0, 0, WIDTH, HEIGHT};
     SDL_Event event;
